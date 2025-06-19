@@ -175,8 +175,7 @@ Begin the adventure with an atmospheric description of the player's current situ
         # Estimate token count
         token_counts = [len(message['content'].split()) for message in self.messages]
         current_total = sum(token_counts)
-        
-        # Remove messages from the middle, keeping system message and recent context
+          # Remove messages from the middle, keeping system message and recent context
         index = 1  # Start after system message
         while current_total > self.config.num_ctx * 0.8 and len(self.messages) > 3:
             if index < len(self.messages) - 1:
@@ -205,7 +204,12 @@ Begin the adventure with an atmospheric description of the player's current situ
                         test_line = part
                     
                     if i < len(parts) - 1:  # Not the last part
-                        lines.append(test_line)
+                        # Check if the line fits before adding it
+                        if self.config.font.size(test_line)[0] <= max_width:
+                            lines.append(test_line)
+                        else:
+                            # Break long line into smaller pieces
+                            lines.extend(self._break_long_line(test_line, max_width))
                         current_line = ""
                     else:
                         current_line = test_line
@@ -219,7 +223,41 @@ Begin the adventure with an atmospheric description of the player's current situ
                 else:
                     if current_line:
                         lines.append(current_line)
-                    current_line = word
+                    
+                    # Check if the word itself is too long
+                    word_width = self.config.font.size(word)[0]
+                    if word_width <= max_width:
+                        current_line = word
+                    else:
+                        # Break the long word
+                        lines.extend(self._break_long_line(word, max_width))
+                        current_line = ""
+        
+        if current_line:
+            # Final check for the last line
+            if self.config.font.size(current_line)[0] <= max_width:
+                lines.append(current_line)
+            else:
+                lines.extend(self._break_long_line(current_line, max_width))
+        
+        return lines
+    
+    def _break_long_line(self, text: str, max_width: int) -> List[str]:
+        """Break a long line that doesn't fit into smaller pieces"""
+        if not text:
+            return []
+        
+        lines = []
+        current_line = ""
+        
+        for char in text:
+            test_line = current_line + char
+            if self.config.font.size(test_line)[0] <= max_width:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = char
         
         if current_line:
             lines.append(current_line)
@@ -238,10 +276,10 @@ Begin the adventure with an atmospheric description of the player's current situ
         # Draw background
         pygame.draw.rect(self.screen, self.config.colors['black'], text_rect)
         pygame.draw.rect(self.screen, self.config.colors['dark_green'], text_rect, 2)
-        
-        # Calculate text rendering area
-        text_width = text_rect.width - 20  # Leave margin inside the box
-        y_pos = text_rect.y + 10 - self.scroll_offset
+          # Calculate text rendering area with more precise margins
+        text_margin = 15  # Internal margin for text
+        text_width = text_rect.width - (text_margin * 2)  # Account for both sides
+        y_pos = text_rect.y + text_margin - self.scroll_offset
         
         # Render messages
         for message in self.display_messages:
@@ -251,15 +289,14 @@ Begin the adventure with an atmospheric description of the player's current situ
             else:
                 color = self.config.colors['green']
                 content = message['content']
-            
-            # Wrap and render text
+              # Wrap and render text
             lines = self.wrap_text(content, text_width)
             for line in lines:
                 if y_pos > text_rect.bottom:
                     break
                 if y_pos + self.config.line_height > text_rect.y:
                     text_surface = self.config.font.render(line, True, color)
-                    self.screen.blit(text_surface, (text_rect.x + 10, y_pos))
+                    self.screen.blit(text_surface, (text_rect.x + text_margin, y_pos))
                 y_pos += self.config.line_height
         
         # Auto-scroll if text goes beyond visible area
