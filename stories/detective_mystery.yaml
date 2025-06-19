@@ -1,0 +1,45 @@
+model: "phi4-mini"
+ollama_url: "http://localhost:11434"
+num_tokens: 4096
+temperature: 0.7
+
+player_card: |
+  Name: The Detective
+  Type: Player Character
+  Description: You are a seasoned detective with over fifteen years of experience solving the impossible cases that others won't touch. Your reputation for handling bizarre and supernatural mysteries has brought you to the attention of those who deal with the truly strange. Armed with keen observational skills, deductive reasoning, and an open mind about the inexplicable, you navigate the shadows between the rational and the supernatural. Your methodical approach to investigation has solved cases that others dismissed as unsolvable.
+  
+  Inventory: Detective badge, notebook and pen, smartphone with camera, flashlight, lock picks, magnifying glass.
+  
+  Background: Former skeptic who learned that not everything can be explained by conventional means. You have contacts in both law enforcement and the occult community, giving you access to resources others might not have.
+
+companion_cards:
+  - |
+    Name: Officer Maya Rodriguez
+    Type: Companion NPC  
+    Description: Officer Rodriguez is your police contact and sometimes reluctant partner in supernatural investigations. While she maintains a healthy skepticism about paranormal explanations, she's learned to trust your instincts when conventional police work hits dead ends. She provides legal authority, access to police resources, and a grounding presence when cases venture into the bizarre. Her practical nature and protective instincts make her invaluable in dangerous situations.
+    
+    Abilities: Police authority, forensic knowledge, tactical training, evidence access, witness interviews.
+    
+    Personality: Skeptical but loyal, protective, professional, occasionally sarcastic about supernatural elements.
+
+  - |
+    Name: Professor Jonathan Blackwood
+    Type: Companion NPC
+    Description: Professor Blackwood is an elderly academic who specializes in folklore, mythology, and comparative religions. Despite his advanced age, he has an encyclopedic knowledge of occult traditions, ancient symbols, and supernatural phenomena. He serves as your research consultant for cases that involve historical mysteries, ancient artifacts, or supernatural elements. His vast library and academic connections often provide crucial insights into seemingly impossible cases.
+    
+    Abilities: Historical research, symbol interpretation, folklore knowledge, academic resources, ancient language translation.
+    
+    Personality: Scholarly, curious, cautious about dangerous supernatural forces, speaks in academic terminology.
+
+story_card: |
+  Welcome to Shadows & Mysteries: The Whitmore Estate Investigation
+  
+  Setting: The modern day Pacific Northwest, where ancient forests meet urban development and old mysteries persist beneath the veneer of contemporary life. The Whitmore Estate sits on 50 acres of prime real estate just outside the city of Cedar Falls, but it has remained unsold for over a decade due to its dark reputation. The Victorian mansion, built in 1889, has been the site of multiple unexplained deaths, mysterious disappearances, and supernatural phenomena that have driven away numerous potential buyers and investigators.
+  
+  Your Mission: You have been hired by the law firm handling the Whitmore Estate to conduct a thorough investigation into the property's troubled history. Recent events have escalated the situation: three different real estate agents have quit after experiencing disturbing phenomena during property showings, security cameras have captured unexplained figures moving through empty rooms, and local residents report strange lights and sounds coming from the supposedly vacant mansion. The law firm needs a definitive report on what's happening at the estate before they can proceed with any sale.
+  
+  The Story So Far: You arrive at the Whitmore Estate on a gray autumn afternoon, accompanied by Officer Rodriguez and Professor Blackwood. The mansion looms before you, its Gothic Revival architecture creating deep shadows even in daylight. The wrought-iron gates stand open, though the security company claims they were locked just hours ago. As you approach the front entrance, you notice that some of the windows show signs of recent disturbance from the inside, despite the house being officially empty. Your investigation tools are ready, your companions are prepared, and the mysteries of Whitmore Estate await your professional attention.
+  
+  Atmosphere: Modern supernatural mystery with elements of psychological thriller and detective procedural. The investigation balances rational detective work with supernatural encounters, requiring both logical deduction and openness to paranormal explanations. The setting combines contemporary technology with historical mysteries.
+  
+  Key Elements: Detective work, evidence gathering, witness interviews, historical research, supernatural investigation, team-based problem solving, modern forensic techniques combined with traditional occult knowledge, and the gradual uncovering of a century-old secret that still haunts the present day.

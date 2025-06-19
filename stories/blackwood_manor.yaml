@@ -1,0 +1,36 @@
+model: "phi4-mini"
+ollama_url: "http://localhost:11434"
+num_tokens: 4096
+temperature: 0.8
+
+player_card: |
+  Name: The Investigator
+  Type: Player Character
+  Description: You are a paranormal investigator drawn to the mysterious Blackwood Manor after reports of supernatural activity. Armed with EMF detectors, a digital camera, and years of experience with the unexplained, you seek to uncover the truth behind the manor's dark history. Your analytical mind and steady nerves have served you well in previous investigations, but this case feels different - more dangerous and more real than anything you've encountered before.
+  
+  Inventory: EMF detector, digital camera with night vision, notebook, flashlight, protective amulet.
+  
+  Background: Former skeptic turned believer after a personal encounter with the supernatural. You have extensive knowledge of occult history, ghost hunting techniques, and protective rituals.
+
+companion_cards:
+  - |
+    Name: Dr. Elena Vasquez
+    Type: Companion NPC
+    Description: Dr. Vasquez is a renowned parapsychologist and your research partner. She carries advanced scientific equipment and has spent decades studying supernatural phenomena. Despite her scientific approach, she has a deep respect for the spiritual world and understands that some things cannot be measured by conventional means. She serves as both a voice of reason and a source of crucial knowledge about the paranormal.
+    
+    Abilities: Scientific analysis, historical research, protection rituals, equipment operation.
+    
+    Personality: Logical, cautious, knowledgeable, respectful of supernatural forces.
+
+story_card: |
+  Welcome to The Blackwood Manor Investigation
+  
+  Setting: Blackwood Manor, a Victorian-era mansion that has stood empty for over fifty years. Located on a hill overlooking the small town of Ravenscroft, the manor has a reputation for being one of the most haunted locations in the region. Built in 1887 by the wealthy industrialist Cornelius Blackwood, the manor was the site of multiple tragedies including mysterious disappearances, unexplained deaths, and reports of supernatural activity that drove the family away in 1923.
+  
+  Your Mission: You have been hired by the local historical society to investigate the recent surge in paranormal activity at Blackwood Manor. Locals report seeing lights in the windows, hearing voices and music from the empty building, and experiencing equipment failures and psychological effects when approaching the property. Your goal is to document the phenomena, uncover the historical truth behind the manor's dark reputation, and if possible, help put the restless spirits to peace.
+  
+  The Story So Far: You and Dr. Vasquez have just arrived at the manor as the sun sets behind the building. The iron gates stand open, though no one has unlocked them in decades. The manor looms before you, its Gothic architecture creating ominous shadows in the fading light. Your EMF detector is already registering unusual readings, and you can feel a strange energy in the air. The front door stands slightly ajar, though local records indicate it was securely locked just days ago.
+  
+  Atmosphere: Gothic horror, mysterious, oppressive, with elements of psychological thriller. The manor itself seems alive with supernatural energy, and every room holds secrets waiting to be uncovered. The investigation will require both scientific methodology and respect for spiritual forces.
+  
+  Key Elements: Paranormal investigation, historical mystery, supernatural encounters, equipment-based gameplay, research and documentation, protective rituals, and the gradual revelation of the Blackwood family's tragic secrets.

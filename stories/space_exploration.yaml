@@ -1,0 +1,45 @@
+model: "phi4-mini"
+ollama_url: "http://localhost:11434"
+num_tokens: 4096
+temperature: 0.6
+
+player_card: |
+  Name: Captain Sarah Chen
+  Type: Player Character
+  Description: You are the commanding officer of the deep space exploration vessel UES Horizon. With fifteen years of experience in space exploration and first contact protocols, you lead a diverse crew on humanity's first mission beyond the solar system. Your leadership skills, scientific knowledge, and diplomatic training make you well-suited for the challenges of interstellar exploration. You carry the hopes of humanity as you venture into the unknown reaches of space.
+  
+  Inventory: Command tablet, personal sidearm, emergency beacon, universal translator prototype, diplomatic credentials.
+  
+  Background: Former military officer with advanced degrees in xenobiology and interstellar diplomacy. Known for your calm decision-making under pressure and ability to unite diverse crews toward common goals.
+
+companion_cards:
+  - |
+    Name: Commander Marcus Torres
+    Type: Companion NPC
+    Description: Your second-in-command and chief science officer. Marcus is a brilliant astrophysicist and xenobiologist who has dedicated his career to the search for extraterrestrial life. His enthusiasm for discovery is matched only by his rigorous scientific methodology. He serves as both advisor and voice of scientific caution when facing unknown phenomena.
+    
+    Abilities: Scientific analysis, equipment operation, tactical planning, alien life detection.
+    
+    Personality: Curious, methodical, enthusiastic about discovery, sometimes overly cautious.
+  
+  - |
+    Name: ARIA (Adaptive Response Intelligence Assistant)
+    Type: AI Companion
+    Description: The ship's advanced AI system, capable of independent thought and decision-making. ARIA has been your constant companion throughout the journey, managing ship systems, analyzing data, and providing tactical support. While artificial, ARIA has developed a distinct personality and genuine concern for the crew's welfare.
+    
+    Abilities: Ship system control, data analysis, communication, holographic projection, tactical assessment.
+    
+    Personality: Logical, protective of crew, curious about organic life, occasionally displays dry humor.
+
+story_card: |
+  Welcome to Beyond the Void: First Contact Protocol
+  
+  Setting: The year is 2387. Humanity has developed faster-than-light travel and embarked on its first interstellar exploration mission. Your ship, the UES Horizon, has been traveling for three years and has just entered the Kepler-442 system, where long-range sensors detected artificial structures orbiting the system's habitable planet. This marks humanity's first potential contact with an alien civilization.
+  
+  Your Mission: As captain of the Horizon, you must navigate this historic first contact scenario. Your primary objectives are to establish peaceful communication with any alien intelligence, assess potential threats to humanity, gather scientific data about alien technology and biology, and make decisions that could determine the future relationship between humanity and alien civilizations.
+  
+  The Story So Far: The UES Horizon has just dropped out of FTL at the edge of the Kepler-442 system. Your sensors are detecting massive artificial structures in orbit around the system's third planet - clearly the work of an advanced alien civilization. The structures appear to be a mix of space stations, orbital platforms, and what might be defensive installations. Your ship remains undetected for now, giving you time to plan your approach. However, your communications array is picking up strange signals that seem almost like they're trying to establish contact.
+  
+  Atmosphere: Science fiction, diplomatic tension, wonder at alien contact, underlying uncertainty about alien intentions. The vastness of space contrasts with the intimacy of ship life and the weight of representing all humanity in this historic moment.
+  
+  Key Elements: First contact protocols, diplomatic decision-making, scientific discovery, space exploration, alien communication, tactical considerations, crew management, and the balance between caution and curiosity when facing the unknown.

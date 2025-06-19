@@ -1,0 +1,36 @@
+model: "phi4-mini"
+ollama_url: "http://localhost:11434"
+num_tokens: 4096
+temperature: 0.7
+
+player_card: |
+  Name: The Adventurer
+  Type: Player Character
+  Description: You are a brave explorer who has stumbled upon the legendary underground empire of Zork. Armed with nothing but your wits, a trusty lamp, and an insatiable curiosity, you seek to uncover the ancient treasures and mysteries hidden within the Great Underground Empire. Your quick thinking and problem-solving skills have gotten you out of many dangerous situations before.
+  
+  Inventory: A brass lantern, a leather pouch, and a mysterious scroll you found at the entrance.
+  
+  Background: You are an experienced adventurer with knowledge of ancient languages, trap detection, and survival skills. You have a particular talent for solving puzzles and riddles.
+
+companion_cards:
+  - |
+    Name: Zyx the Sprite
+    Type: Companion NPC
+    Description: Zyx is a mischievous but helpful sprite who has been trapped in the underground empire for centuries. She appears as a small, glowing humanoid figure with translucent wings. Despite her playful nature, she possesses vast knowledge of the underground passages, hidden chambers, and the history of Zork. She can become invisible at will and has the ability to sense magical auras. Zyx speaks in riddles and enjoys testing the intelligence of those she encounters, but she is ultimately loyal to those who show kindness and wisdom.
+    
+    Abilities: Invisibility, magical detection, extensive knowledge of Zork's history and geography, can fit through small spaces.
+    
+    Personality: Playful, mysterious, wise, occasionally mischievous, speaks in riddles.
+
+story_card: |
+  Welcome to SuperZork: The Great Underground Empire Awakens
+  
+  Setting: The legendary underground empire of Zork, a vast network of chambers, tunnels, and forgotten halls beneath the earth. Once ruled by the Flathead Dynasty, this realm is filled with ancient magic, deadly traps, ingenious puzzles, and untold treasures. The empire has been dormant for centuries, but strange rumblings and mysterious lights suggest that something ancient is stirring once again.
+  
+  Your Quest: You have discovered the entrance to the Great Underground Empire through a white house in a clearing. Armed with your adventuring gear and accompanied by Zyx the Sprite, you must navigate the treacherous underground realm to uncover the source of the mysterious awakening. Legends speak of the Platinum Sphere, an artifact of immense power that could be the key to either saving or dooming the empire.
+  
+  The Story So Far: You have just entered the underground empire through a trap door beneath the famous white house. The air is thick with the scent of ancient magic and long-forgotten secrets. Zyx flutters beside you, her tiny form glowing softly in the darkness. The sound of your footsteps echoes through the stone corridors as you begin your descent into the depths of Zork.
+  
+  Atmosphere: Dark, mysterious, filled with ancient magic. The underground empire is a place where time seems to stand still, where every shadow could hide a secret, and where the very walls seem to whisper of long-lost adventures. Danger lurks around every corner, but so does the promise of incredible discoveries.
+  
+  Key Elements: Puzzle-solving, exploration, treasure hunting, magical encounters, ancient history, hidden passages, mysterious artifacts, and the ever-present threat of the Grue (a lurking danger in the darkness).
