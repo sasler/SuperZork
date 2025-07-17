@@ -1,5 +1,16 @@
+# AI Backend Configuration
+ai_backend: "ollama"  # Options: "ollama", "huggingface"
 model: "phi4-mini"
+
+# Ollama-specific settings (used when ai_backend is "ollama")
 ollama_url: "http://localhost:11434"
+
+# Hugging Face-specific settings (used when ai_backend is "huggingface") 
+hf_model: "microsoft/DialoGPT-large"  # Alternative HF model
+hf_token: null  # Optional: Hugging Face API token for private models
+max_tokens: 1024  # For Hugging Face models
+
+# Common settings for both backends
 num_tokens: 4096
 temperature: 0.7
 
