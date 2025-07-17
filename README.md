@@ -118,10 +118,22 @@ companion_cards:
 - **Cons**: Requires local installation and model downloads
 - **Setup**: Install Ollama and run `ollama pull phi4-mini`
 
-#### Hugging Face MCP Backend  
+#### Hugging Face Backend  
 - **Pros**: Access to diverse cloud models, no local setup required
-- **Cons**: Requires internet connection, potential API costs
-- **Setup**: Install MCP with `pip install mcp`
+- **Cons**: Requires internet connection, may need API token for best experience
+- **Setup**: 
+  1. For basic access: Works without setup (rate-limited)
+  2. For full access: Get a free API token from [Hugging Face](https://huggingface.co/settings/tokens)
+  3. Add `hf_token: "your_token_here"` to your story YAML configuration
+
+### Getting a Hugging Face API Token
+1. Create a free account at [huggingface.co](https://huggingface.co/)
+2. Go to [Settings > Access Tokens](https://huggingface.co/settings/tokens)
+3. Click "New token" and create a token with "Read" permissions
+4. Copy the token and add it to your story configuration:
+   ```yaml
+   hf_token: "hf_your_token_here"
+   ```
 
 ### System Prompt Customization
 Edit `prompts/system_prompt.txt` to customize the AI's behavior and personality.

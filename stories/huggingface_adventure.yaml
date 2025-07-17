@@ -7,7 +7,7 @@ ollama_url: "http://localhost:11434"
 
 # Hugging Face-specific settings (used when ai_backend is "huggingface") 
 hf_model: "microsoft/DialoGPT-large"  # Alternative HF model
-hf_token: null  # Optional: Hugging Face API token for private models
+hf_token: null  # Optional but recommended: Get a free token from https://huggingface.co/settings/tokens
 max_tokens: 1024  # For Hugging Face models
 
 # Common settings for both backends

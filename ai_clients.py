@@ -106,7 +106,7 @@ class OllamaClient(AIClient):
 
 
 class HuggingFaceClient(AIClient):
-    """Hugging Face MCP client implementation"""
+    """Hugging Face client implementation using HTTP API"""
     
     def __init__(self, model: str = "microsoft/DialoGPT-large", **kwargs):
         super().__init__(model, **kwargs)
@@ -114,26 +114,24 @@ class HuggingFaceClient(AIClient):
         self.temperature = kwargs.get('temperature', 0.7)
         self.api_token = kwargs.get('hf_token', None)
         
-        # Try to import MCP client
-        try:
-            import mcp
-            self.mcp = mcp
-            self._mcp_available = True
-        except ImportError:
-            self._mcp_available = False
+        # Set up API endpoint
+        self.api_url = f"https://api-inference.huggingface.co/models/{self.model}"
+        
+        # Headers for API requests
+        self.headers = {
+            "Content-Type": "application/json",
+        }
+        if self.api_token:
+            self.headers["Authorization"] = f"Bearer {self.api_token}"
     
     def stream_chat(self, messages: List[Message]) -> Iterator[str]:
-        """Stream response from Hugging Face model via MCP"""
-        if not self._mcp_available:
-            yield "Hugging Face MCP is not available. Please install the 'mcp' package: pip install mcp"
-            return
-        
+        """Stream response from Hugging Face model"""
         try:
             # Convert messages to prompt format for Hugging Face
             prompt = self._messages_to_prompt(messages)
             
-            # Use MCP to query Hugging Face model
-            result = self._query_huggingface_model(prompt)
+            # Use Hugging Face Inference API
+            result = self._query_huggingface_api(prompt)
             
             # Stream the response word by word for consistency with Ollama
             if result:
@@ -141,7 +139,7 @@ class HuggingFaceClient(AIClient):
                 for word in words:
                     yield word + " "
             else:
-                yield "The mystical AI oracle remains silent..."
+                yield "The cloud-based AI oracle remains silent..."
                 
         except Exception as e:
             yield f"The Hugging Face oracle encounters an error: {str(e)}"
@@ -150,63 +148,77 @@ class HuggingFaceClient(AIClient):
         """Convert message history to a single prompt"""
         prompt_parts = []
         
-        for message in messages:
-            if message.role == "system":
-                prompt_parts.append(f"System: {message.content}")
-            elif message.role == "user":
+        # Skip system message for now as it's very long
+        for message in messages[1:]:  # Skip system message
+            if message.role == "user":
                 prompt_parts.append(f"Human: {message.content}")
             elif message.role == "assistant":
                 prompt_parts.append(f"Assistant: {message.content}")
         
+        # Add the prompt for the next assistant response
         prompt_parts.append("Assistant:")
         return "\n\n".join(prompt_parts)
     
-    def _query_huggingface_model(self, prompt: str) -> str:
-        """Query Hugging Face model using MCP tools"""
+    def _query_huggingface_api(self, prompt: str) -> str:
+        """Query Hugging Face Inference API"""
         try:
-            # Use the Hugging Face MCP tools to generate text
-            # This is a simplified implementation - in practice, you'd use the actual MCP tools
+            import requests
             
-            # For text generation models, we'll use a simple approach
-            # In a real implementation, you'd use the specific MCP tools available
+            # Prepare payload for text generation
+            payload = {
+                "inputs": prompt,
+                "parameters": {
+                    "max_new_tokens": min(self.max_tokens, 200),  # Conservative limit
+                    "temperature": self.temperature,
+                    "return_full_text": False,
+                    "do_sample": True,
+                }
+            }
             
-            # Placeholder for actual MCP implementation
-            # This would be replaced with actual MCP tool calls
+            # Make request to Hugging Face API
+            response = requests.post(
+                self.api_url,
+                headers=self.headers,
+                json=payload,
+                timeout=30
+            )
             
-            # Simulate text generation for now
-            return self._simulate_text_generation(prompt)
-            
+            if response.status_code == 200:
+                result = response.json()
+                if isinstance(result, list) and len(result) > 0:
+                    generated_text = result[0].get('generated_text', '')
+                    return generated_text
+                else:
+                    return "The cloud spirits whisper mysteriously..."
+            elif response.status_code == 401:
+                return "The Hugging Face oracle requires authentication. Please provide an HF token in your story configuration (hf_token field) to access cloud models."
+            elif response.status_code == 503:
+                return "The Hugging Face model is loading... Please try again in a moment."
+            elif response.status_code == 429:
+                return "The cloud oracle is experiencing high demand. Please try again shortly."
+            else:
+                return f"The cloud oracle responds with status {response.status_code}. For better access, consider providing an API token."
+                
+        except ImportError:
+            return "The requests library is required for Hugging Face API access."
         except Exception as e:
-            raise Exception(f"HuggingFace MCP query failed: {str(e)}")
-    
-    def _simulate_text_generation(self, prompt: str) -> str:
-        """Simulate text generation - replace with actual MCP calls"""
-        # This is a placeholder that would be replaced with actual Hugging Face MCP calls
-        # For now, we'll return a simple response to demonstrate the architecture
-        
-        # Extract the last user input to provide a contextual response
-        lines = prompt.split('\n')
-        last_human_input = ""
-        for line in reversed(lines):
-            if line.startswith("Human:"):
-                last_human_input = line[6:].strip()
-                break
-        
-        # Simple rule-based responses for demonstration
-        responses = [
-            f"The underground empire echoes with your words: '{last_human_input}'. Ancient magic swirls around you as new possibilities unfold.",
-            f"Your action '{last_human_input}' resonates through the chambers of Zork. The stone walls seem to shimmer with otherworldly energy.",
-            f"As you {last_human_input.lower()}, the mystical forces of the empire respond. Shadows dance in the flickering light of your lantern.",
-        ]
-        
-        # Simple hash-based selection for consistency
-        import hashlib
-        hash_value = int(hashlib.md5(last_human_input.encode()).hexdigest()[:8], 16)
-        return responses[hash_value % len(responses)]
+            raise Exception(f"HuggingFace API query failed: {str(e)}")
     
     def is_available(self) -> bool:
-        """Check if Hugging Face MCP is available"""
-        return self._mcp_available
+        """Check if Hugging Face API is available"""
+        try:
+            import requests
+            # Test with a simple request to check API availability
+            test_response = requests.get(
+                "https://api-inference.huggingface.co/models/gpt2",
+                headers=self.headers,
+                timeout=5
+            )
+            # Accept 200 (OK), 401 (needs token), 503 (model loading) as "available"
+            # 401 means the API is accessible but needs authentication
+            return test_response.status_code in [200, 401, 503]
+        except:
+            return False
 
 
 def create_ai_client(backend: str, model: str, **kwargs) -> AIClient:
