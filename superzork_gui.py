@@ -3,21 +3,25 @@
 SuperZork: AI-Powered Text Adventure Game
 GUI Version with Retro Styling
 
-A classic text adventure game enhanced with AI using Ollama and phi4-mini.
+A classic text adventure game enhanced with AI using multiple backends:
+- Ollama (local AI models)
+- Hugging Face MCP (cloud-based models)
+
 Features a retro-styled graphical interface reminiscent of classic computer terminals.
 """
 
 import pygame
 import sys
-import requests
-import json
 import yaml
 import argparse
 import re
 import os
 from pathlib import Path
-from typing import List, Dict, Any, Iterator, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional
 from colorama import Fore, init
+
+# Import our AI client system
+from ai_clients import create_ai_client, get_available_backends, Message
 
 # Initialize colorama for console output
 init(autoreset=True)
@@ -29,7 +33,7 @@ pygame.init()
 class GameConfig:
     """Configuration class for the GUI game"""
     
-    def __init__(self, story_path: str):
+    def __init__(self, story_path: str, backend: str = None):
         """Initialize configuration with default values"""
         # Display settings
         self.width, self.height = 1200, 800
@@ -52,6 +56,9 @@ class GameConfig:
             'gray': (128, 128, 128),
             'dark_gray': (64, 64, 64)
         }
+        
+        # Store backend override
+        self.backend_override = backend
         
         # Load story configuration
         self.load_config(story_path)
@@ -84,11 +91,44 @@ class GameConfig:
             with open(path, 'r', encoding='utf-8') as f:
                 config = yaml.safe_load(f)
             
-            # Ollama settings
-            self.model = config.get('model', 'phi4-mini')
-            self.ollama_url = config.get('ollama_url', 'http://localhost:11434')
+            # Determine AI backend
+            self.ai_backend = self.backend_override or config.get('ai_backend', 'ollama')
+            
+            # Common settings
             self.num_ctx = config.get('num_tokens', 4096)
             self.temperature = config.get('temperature', 0.7)
+            
+            # Backend-specific model selection
+            if self.ai_backend.lower() == 'ollama':
+                self.model = config.get('model', 'phi4-mini')
+                ai_config = {
+                    'ollama_url': config.get('ollama_url', 'http://localhost:11434'),
+                    'num_tokens': self.num_ctx,
+                    'temperature': self.temperature
+                }
+            elif self.ai_backend.lower() == 'huggingface':
+                self.model = config.get('hf_model', config.get('model', 'microsoft/DialoGPT-large'))
+                ai_config = {
+                    'hf_token': config.get('hf_token'),
+                    'max_tokens': config.get('max_tokens', 1024),
+                    'temperature': self.temperature
+                }
+            else:
+                raise ValueError(f"Unknown AI backend: {self.ai_backend}")
+            
+            # Create AI client
+            try:
+                self.ai_client = create_ai_client(self.ai_backend, self.model, **ai_config)
+                if not self.ai_client.is_available():
+                    raise ConnectionError(f"{self.ai_backend} backend is not available")
+            except Exception as e:
+                print(f"{Fore.RED}Error initializing {self.ai_backend} backend: {e}")
+                available = get_available_backends()
+                if available:
+                    print(f"{Fore.YELLOW}Available backends: {', '.join(available)}")
+                else:
+                    print(f"{Fore.RED}No AI backends are currently available!")
+                sys.exit(1)
             
             # Story elements
             self.player_card = config.get('player_card', '')
@@ -173,14 +213,15 @@ Begin the adventure with an atmospheric description of the player's current situ
             return
         
         # Estimate token count
-        token_counts = [len(message['content'].split()) for message in self.messages]
+        token_counts = [len(message.content.split()) for message in self.messages]
         current_total = sum(token_counts)
-          # Remove messages from the middle, keeping system message and recent context
+        
+        # Remove messages from the middle, keeping system message and recent context
         index = 1  # Start after system message
         while current_total > self.config.num_ctx * 0.8 and len(self.messages) > 3:
             if index < len(self.messages) - 1:
                 removed_msg = self.messages.pop(index)
-                current_total -= len(removed_msg['content'].split())
+                current_total -= len(removed_msg.content.split())
             else:
                 break
     
@@ -331,7 +372,7 @@ Begin the adventure with an atmospheric description of the player's current situ
     
     def draw_status_bar(self) -> None:
         """Draw status information"""
-        status_text = f"SuperZork | Model: {self.config.model} | "
+        status_text = f"SuperZork | Backend: {self.config.ai_backend.upper()} | Model: {self.config.model} | "
         if self.is_ai_typing:
             status_text += "AI is thinking..."
         else:
@@ -340,58 +381,19 @@ Begin the adventure with an atmospheric description of the player's current situ
         text_surface = self.config.font.render(status_text, True, self.config.colors['cyan'])
         self.screen.blit(text_surface, (self.margin, 5))
     
-    def stream_llm_chat(self, message: str) -> Iterator[str]:
-        """Stream response from Ollama LLM"""
+    def stream_ai_response(self, message: str):
+        """Stream response from AI backend"""
         # Add user message to conversation
         if message.strip():
-            self.messages.append({
-                "role": "user",
-                "content": message
-            })
-        
-        # Prepare request payload
-        payload = {
-            "model": self.config.model,
-            "messages": self.messages,
-            "stream": True,
-            "options": {
-                "num_ctx": self.config.num_ctx,
-                "temperature": self.config.temperature,
-            }        }
+            self.messages.append(Message("user", message))
         
         try:
-            # Increase timeout and add connection timeout
-            response = requests.post(
-                f"{self.config.ollama_url}/api/chat",
-                json=payload,
-                stream=True,
-                timeout=(10, 120)  # (connection timeout, read timeout)
-            )
-            response.raise_for_status()
-            
-            for line in response.iter_lines():
-                if line:
-                    try:
-                        json_data = json.loads(line)
-                        if 'message' in json_data and 'content' in json_data['message']:
-                            content = json_data['message']['content']
-                            if content:
-                                yield content
-                        # Check if we've reached the end of the response
-                        if json_data.get('done', False):
-                            break
-                    except json.JSONDecodeError:
-                        continue
-                        
-        except requests.exceptions.Timeout:
-            print("Request timed out. The AI is taking longer than expected.")
-            yield "The ancient spirits are taking their time to respond... Perhaps try a simpler command or restart the game if this persists."
-        except requests.exceptions.ConnectionError:
-            print("Could not connect to Ollama. Make sure it's running.")
-            yield "The magical connection to the underground realm has been severed. Please ensure Ollama is running and try again."
-        except requests.exceptions.RequestException as e:
-            print(f"Error connecting to Ollama: {e}")
-            yield "The mystical AI oracle has encountered an error. Please check your connection and try again."
+            # Stream response from AI client
+            for token in self.config.ai_client.stream_chat(self.messages):
+                yield token
+        except Exception as e:
+            print(f"AI Error: {e}")
+            yield "The mystical AI oracle has encountered an error. Please try again."
     
     def process_input(self, user_input: str) -> bool:
         """Process user input. Returns True if game should continue."""
@@ -404,7 +406,7 @@ Begin the adventure with an atmospheric description of the player's current situ
             if self.is_story_update:
                 return True
             
-            if len(self.messages) > 1 and self.messages[-1]["role"] == "assistant":
+            if len(self.messages) > 1 and self.messages[-1].role == "assistant":
                 self.messages.pop()
                 if self.display_messages and self.display_messages[-1]["role"] == "assistant":
                     self.display_messages.pop()
@@ -416,17 +418,14 @@ Begin the adventure with an atmospheric description of the player's current situ
         elif command == "debug":
             print("\n--- Debug: Conversation History ---")
             for i, msg in enumerate(self.messages):
-                print(f"{i+1}. [{msg['role'].upper()}]: {msg['content'][:100]}...")
+                print(f"{i+1}. [{msg.role.upper()}]: {msg.content[:100]}...")
             print("--- End Debug ---\n")
             return True
         
         # Handle story update mode
         if self.is_story_update:
             if user_input.strip():
-                self.messages.append({
-                    "role": "assistant",
-                    "content": user_input
-                })
+                self.messages.append(Message("assistant", user_input))
                 self.display_messages.append({
                     "role": "assistant",
                     "content": f"(Updated Story): {user_input}"
@@ -446,7 +445,7 @@ Begin the adventure with an atmospheric description of the player's current situ
             self.truncate_messages()
             
             # Start AI response
-            self.text_generator = self.stream_llm_chat(user_input)
+            self.text_generator = self.stream_ai_response(user_input)
             self.display_messages.append({
                 "role": "assistant",
                 "content": ""
@@ -471,10 +470,7 @@ Begin the adventure with an atmospheric description of the player's current situ
                 
                 # Add final response to conversation
                 if self.display_messages:
-                    self.messages.append({
-                        "role": "assistant",
-                        "content": self.display_messages[-1]['content']
-                    })
+                    self.messages.append(Message("assistant", self.display_messages[-1]['content']))
     
     def load_system_prompt(self) -> str:
         """Load the system prompt from external file"""
@@ -499,10 +495,10 @@ Begin the adventure with an atmospheric description of the player's current situ
         try:
             # Initialize the game
             system_prompt, first_message = self.build_story_system_prompt()
-            self.messages.append({"role": "system", "content": system_prompt})
+            self.messages.append(Message("system", system_prompt))
             
             # Start with the initial story
-            self.text_generator = self.stream_llm_chat(first_message)
+            self.text_generator = self.stream_ai_response(first_message)
             self.display_messages = [{"role": "assistant", "content": ""}]
             self.is_ai_typing = True
             self.next_word_time = pygame.time.get_ticks() + 500
@@ -563,7 +559,8 @@ def main():
         epilog="""
 Examples:
   python superzork_gui.py -s stories/zork_adventure.yaml
-  python superzork_gui.py --story stories/custom_adventure.yaml
+  python superzork_gui.py --story stories/custom_adventure.yaml --backend huggingface
+  python superzork_gui.py -s stories/huggingface_adventure.yaml -b ollama
         """
     )
     parser.add_argument(
@@ -571,12 +568,26 @@ Examples:
         required=True,
         help="Path to the YAML story configuration file"
     )
+    parser.add_argument(
+        "-b", "--backend",
+        choices=["ollama", "huggingface"],
+        help="AI backend to use (overrides story configuration)"
+    )
     
     args = parser.parse_args()
     
+    # Show available backends if none are available
+    available = get_available_backends()
+    if not available:
+        print(f"{Fore.RED}No AI backends are available!")
+        print(f"{Fore.YELLOW}Please ensure either:")
+        print(f"{Fore.YELLOW}  - Ollama is running (install from https://ollama.ai/)")
+        print(f"{Fore.YELLOW}  - Hugging Face MCP is installed (pip install mcp)")
+        sys.exit(1)
+    
     try:
         # Create and run the game
-        config = GameConfig(args.story)
+        config = GameConfig(args.story, args.backend)
         game = SuperZorkGUI(config)
         game.run()
     except Exception as e:

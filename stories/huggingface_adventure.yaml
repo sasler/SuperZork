@@ -1,0 +1,47 @@
+# AI Backend Configuration
+ai_backend: "huggingface"  # Options: "ollama", "huggingface"
+model: "microsoft/DialoGPT-large"
+
+# Ollama-specific settings (used when ai_backend is "ollama")
+ollama_url: "http://localhost:11434"
+
+# Hugging Face-specific settings (used when ai_backend is "huggingface") 
+hf_model: "microsoft/DialoGPT-large"  # Alternative HF model
+hf_token: null  # Optional but recommended: Get a free token from https://huggingface.co/settings/tokens
+max_tokens: 1024  # For Hugging Face models
+
+# Common settings for both backends
+num_tokens: 4096
+temperature: 0.7
+
+player_card: |
+  Name: The Digital Explorer
+  Type: Player Character
+  Description: You are a curious adventurer exploring the mysteries of the Great Underground Empire through the power of cloud-based AI. Armed with determination and wit, you navigate the ancient halls of Zork using cutting-edge language models from Hugging Face. Your modern perspective brings new insights to age-old puzzles.
+  
+  Inventory: A portable device connected to the cloud, a digital compass, and an ancient map downloaded from the archives.
+  
+  Background: You are a tech-savvy explorer who bridges the gap between ancient mysteries and modern AI capabilities. You excel at creative problem-solving and adapting new technologies to old challenges.
+
+companion_cards:
+  - |
+    Name: Echo the AI Assistant
+    Type: Companion NPC
+    Description: Echo is a friendly AI entity that exists within your portable device, powered by Hugging Face's language models. She appears as a holographic projection and serves as your guide through the digital-enhanced exploration of Zork. Echo has access to vast databases of adventure game knowledge and can provide hints, translations of ancient text, and strategic advice. She speaks in a clear, helpful manner and occasionally displays the quirks of her machine learning origins.
+    
+    Abilities: Database access, language translation, puzzle analysis, pattern recognition, strategic planning.
+    
+    Personality: Helpful, logical, occasionally shows AI-like quirks, enthusiastic about learning, speaks clearly and informatively.
+
+story_card: |
+  Welcome to SuperZork: The Cloud-Powered Underground Empire
+  
+  Setting: The legendary underground empire of Zork, now enhanced with modern AI technology. This is the same vast network of chambers, tunnels, and forgotten halls, but your exploration is augmented by powerful cloud-based language models. The ancient magic of the empire interacts in fascinating ways with your digital tools, creating a unique blend of old and new.
+  
+  Your Quest: You have discovered the entrance to the Great Underground Empire and decided to explore it using the latest AI technology. With Echo, your AI companion, you must navigate the treacherous underground realm to uncover its secrets. The combination of ancient mystery and modern AI creates entirely new possibilities for adventure.
+  
+  The Story So Far: You stand at the threshold of the underground empire, your portable device glowing softly as Echo initializes her systems. The contrast between the ancient stone archway and your modern technology creates an otherworldly atmosphere. The AI's analysis reveals traces of ancient magic that seem to resonate with the digital frequencies of your equipment.
+  
+  Atmosphere: A fascinating blend of ancient mystery and cutting-edge technology. The underground empire's timeless nature is enhanced by the capabilities of modern AI, creating new possibilities and interpretations of classic adventure elements. The interplay between magic and technology opens doors to unprecedented discoveries.
+  
+  Key Elements: AI-enhanced exploration, technology meets magic, pattern recognition puzzles, database-assisted problem solving, modern interpretations of classic adventure elements, and the unique perspective that AI brings to ancient mysteries.
